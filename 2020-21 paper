@@ -1,0 +1,349 @@
+转自 从200多篇顶会论文看推荐系统前沿方向与最新进展
+AI Box专栏
+作者简介: 牟善磊，中国人民大学硕士二年级，导师是赵鑫教授，研究方向是推荐系统。
+
+引言：推荐系统作为深度学习（CV, NLP, RS）御三家之一，一直都是学术界和工业界的热门研究topic。为了更加清楚的掌握推荐系统的前沿方向与最新进展，本文整理了最近一年顶会中推荐系统相关的论文，一共涵盖SIGIR2020, KDD2020, RecSys2020, CIKM2020, AAAI2021, WSDM2021, WWW2021七个会议共221篇论文。本次整理以long paper和research paper为主，也包含少量的short paper和industry paper。由于工作量巨大，难免有疏漏，欢迎大家在评论区指正。
+
+本文整理的论文列表已经同步更新到GitHub，GitHub上会持续更新顶会论文，欢迎大家关注和star。
+
+RUCAIBox/Awesome-RSPapers
+​github.com/RUCAIBox/Awesome-RSPapers
+
+同时欢迎大家使用RecBole（伯乐）推荐系统工具包。RecBole 是一个基于 PyTorch 实现的，面向研究者的，易于开发与复现的，统一、全面、高效的推荐系统代码库。目前已经有72个常见的推荐模型，覆盖主流的研究任务，支持全面多样的数据处理与评测方式。同时我们也整理了28个常用的推荐系统数据集，可以直接在RecBole中使用。
+
+RUCAIBox/RecBole
+​github.com/RUCAIBox/RecBole
+
+RUCAIBox/RecSysDatasets
+​github.com/RUCAIBox/RecSysDatasets
+
+本文按照个人阅读习惯和文章的侧重点将这些论文分为以下五大类和若干小类：
+
+推荐任务
+Collaborative Filtering
+Sequential/Session-based Recommendations
+Knowledge-aware Recommendations
+Feature Interactions
+Conversational Recommender System
+Social Recommendations
+News Recommendations
+Text-aware Recommendations
+Point-of-Interest
+Online Recommendations
+Group Recommendations
+Multi-task/Multi-behavior/Cross-domain Recommendations
+Other Task
+2. 推荐的热门研究话题
+
+Debias in Recommender System
+Fairness in Recommender System
+Attack in Recommender System
+Explanation in Recommender System
+Long-tail/Cold-start in Recommender System
+Evaluation
+3. 先进技术在推荐中的应用
+
+Pre-training in Recommender System
+Reinforcement Learning in Recommender System
+Knowledge Distillation in Recommender System
+NAS in Recommender System
+Federated Learning in Recommender System
+4. 理论/实验分析
+
+5. 其他
+
+1. 推荐任务
+1.1 Collaborative Filtering
+
+协同过滤永不过时！作为经典中的经典，协同过滤更多考虑用户和物品的交互信息来找到相似的用户和物品，再利用相似性来进行推荐。从最早的基于邻居（Neighbor）的方法ItemKNN, UserKNN等，到基于矩阵分解（MF）的方法SVD++, BPRMF等，再随着神经网络的发展，基于神经网络（NN）的方法NCF, CDAE等，再到最近一些基于图神经网络的方法，协同过滤一直在不断进步，也展现出越来越强大的威力。最新的一些研究工作主要集中在如何更好的捕捉相似性上，包括设计更为复杂的网络结构，主要以VAE，GNN的结构为主；更复杂的空间来度量，例如双曲空间，立方体表示；以及更复杂的相似度计算方式。
+
+LightGCN: Simplifying and Powering Graph Convolution Network for Recommendation. SIGIR 2020 【GNN-based】
+Deep Critiquing for VAE-based Recommender Systems. SIGIR 2020 【VAE-based】
+Neighbor Interaction Aware Graph Convolution Networks for Recommendation. SIGIR 2020 【GNN-based】
+A Framework for Recommending Accurate and Diverse Items Using Bayesian Graph Convolutional Neural Networks. KDD 2020 【GNN-based】
+Dual Channel Hypergraph Collaborative Filtering. KDD 2020 【基于超图的CF】
+Probabilistic Metric Learning with Adaptive Margin for Top-K Recommendation. KDD 2020 【新的度量方式】
+Content-Collaborative Disentanglement Representation Learning for Enhanced Recommendation. RecSys 2020
+Neural Collaborative Filtering vs. Matrix Factorization Revisited. RecSys 2020 【Rendle的文章，分析MF在效果和效率上都要比NCF好】
+Bilateral Variational Autoencoder for Collaborative Filtering. WSDM 2021【user，item双向VAE】
+Learning User Representations with Hypercuboids for Recommender Systems. WSDM 2021 【立方体表示】
+Local Collaborative Autoencoders. WSDM 2021
+A Scalable, Adaptive and Sound Nonconvex Regularizer for Low-rank Matrix Completion. WWW 2021 【一种低秩矩阵分解方法】
+HGCF: Hyperbolic Graph Convolution Networks for Collaborative Filtering. WWW 2021 【双曲图卷积用于CF，双曲卷积已经有不少工作了，也出现在RS了】
+High-dimensional Sparse Embeddings for Collaborative Filtering. WWW 2021 【高维稀疏表示】
+Collaborative Filtering with Preferences Inferred from Brain Signals. WWW 2021 【Brain Signals】
+Interest-aware Message-Passing GCN for Recommendation. WWW 2021
+Neural Collaborative Reasoning. WWW 2021 【用NN建模logical reasoning来代替inner product】
+Sinkhorn Collaborative Filtering. WWW 2021
+Disentangling User Interest and Conformity for Recommendation with Causal Embedding. WWW 2021
+1.2 Sequential/Session-based Recommendations
+
+序列推荐也是顶会中热门的研究方向。sequential recommendations和session-based recommendations严格来说并不完全相似，与sequential recommendations相比，session-based不太有user的概念以及序列更短，但两者有非常多的相似之处，都是通过交互过的item序列来刻画偏好，因此放在一起来说。序列推荐最早是基于Markov Chain来进行建模，例如经典方法FPMC，后来随着一些序列模型的发展，例如RNN，GRU，包括最近火热的Transformer，序列推荐开始基于这些序列模型来建模，例如GRU4Rec，SASRec等，随着图神经网络的发展，基于GNN的方法也变得非常热门。
+
+Sequential Recommendation with Self-attentive Multi-adversarial Network. SIGIR 2020
+KERL: A Knowledge-Guided Reinforcement Learning Model for Sequential Recommendation. SIGIR 2020 【SR + KG + RL】
+Modeling Personalized Item Frequency Information for Next-basket Recommendation. SIGIR 2020 【融合item频率】
+Incorporating User Micro-behaviors and Item Knowledge into Multi-task Learning for Session-based Recommendation. SIGIR 2020 【SR + KG + MTL】
+GAG: Global Attributed Graph Neural Network for Streaming Session-based Recommendation. SIGIR 2020 【Streaming SR】
+Next-item Recommendation with Sequential Hypergraphs. SIGIR 2020 【基于超图】
+A General Network Compression Framework for Sequential Recommender Systems. SIGIR 2020 【通用的SR模型压缩方法】
+Make It a Chorus: Knowledge- and Time-aware Item Modeling for Sequential Recommendation. SIGIR 2020 【SR + KG】
+Global Context Enhanced Graph Neural Networks for Session-based Recommendation. SIGIR 2020
+Self-Supervised Reinforcement Learning for Recommender Systems. SIGIR 2020 【SR + RL】
+Time Matters: Sequential Recommendation with Complex Temporal Information. SIGIR 2020 【Time-aware】
+Controllable Multi-Interest Framework for Recommendation. SIGIR 2020 【多兴趣】
+Disentangled Self-Supervision in Sequential Recommenders. KDD 2020 【多兴趣】
+Handling Information Loss of Graph Neural Networks for Session-based Recommendation. KDD 2020
+Contextual and Sequential User Embeddings for Large-Scale Music Recommendation. RecSys 2020 【针对music场景】
+FISSA:Fusing Item Similarity Models with Self-Attention Networks for Sequential Recommendation. RecSys 2020 【SASRec的基础上融合物品相似性】
+From the lab to production: A case study of session-based recommendations in the home-improvement domain. RecSys 2020 【对SR方法评测分析】
+Recommending the Video to Watch Next: An Offline and Online Evaluation at YOUTV.de. RecSys 2020 【基于Markov Chain】
+SSE-PT:Sequential Recommendation Via Personalized Transformer. RecSys 2020 【改进SASRec】
+Improving End-to-End Sequential Recommendations with Intent-aware Diversification. CIKM 2020
+Quaternion-based self-Attentive Long Short-term User Preference Encoding for Recommendation. CIKM 2020 【Quaternion捕捉长短期兴趣】
+Sequential Recommender via Time-aware Attentive Memory Network. CIKM 2020 【Time-aware】
+Star Graph Neural Networks for Session-based Recommendation. CIKM 2020
+Dynamic Memory Based Attention Network for Sequential Recommendation. AAAI 2021
+Noninvasive Self-Attention for Side Information Fusion in Sequential Recommendation. AAAI 2021【BERT + Context】
+Self-Supervised Hypergraph Convolutional Networks for Session-based Recommendation. AAAI 2021 【基于超图】
+An Efficient and Effective Framework for Session-based Social Recommendation. WSDM 2021
+Sparse-Interest Network for Sequential Recommendation. WSDM 2021 【多兴趣】
+Dynamic Embeddings for Interaction Prediction. WWW 2021
+Session-aware Linear Item-Item Models for Session-based Recommendation. WWW 2021
+RetaGNN: Relational Temporal Attentive Graph Neural Networks for Holistic Sequential Recommendation. WWW 2021
+Adversarial and Contrastive Variational Autoencoder for Sequential Recommendation. WWW 2021 【VAE】
+Future-Aware Diverse Trends Framework for Recommendation. WWW 2021 【融合特征】
+Linear-Time Self Attention with Codeword Histogram for Efficient Recommendation. WWW 2021 【线性时间的self attention】
+DeepRec: On-device Deep Learning for Privacy-Preserving Sequential Recommendation in Mobile Commerce. WWW 2021 【序列推荐中的隐私保护】
+1.3 Knowledge-aware Recommendations
+
+这一部分主要包括利用结构化信息来帮助推荐系统的工作，用到的结构化信息主要以Knowledge graph和HIN为主。这一类推荐任务也是近些年来热门的研究方向。为了能充分发挥出结构化信息的优势，早期有不少基于meta-path的方法，随着图神经网络的发展，目前GNN的方法已经成为主流。
+
+CKAN: Collaborative Knowledge-aware Attentive Network for Recommender Systems. SIGIR 2020
+Attentional Graph Convolutional Networks for Knowledge Concept Recommendation in MOOCs in a Heterogeneous View. SIGIR 2020 【MOOC推荐】
+MVIN: Learning multiview items for recommendation. SIGIR 2020
+Jointly Non-Sampling Learning for Knowledge Graph Enhanced Recommendation. SIGIR 2020
+Joint Item Recommendation and Attribute Inference: An Adaptive Graph Convolutional Network Approach. SIGIR 2020
+Leveraging Demonstrations for Reinforcement Recommendation Reasoning over Knowledge Graphs. SIGIR 2020 【RL】
+SimClusters Community-Based Representations for Heterogenous Recommendations at Twitter. KDD 2020 【Industry Paper by Twitter】
+Multi-modal Knowledge Graphs for Recommender Systems. CIKM 2020
+DisenHAN Disentangled Heterogeneous Graph Attention Network for Recommendation. CIKM 2020
+Genetic Meta-Structure Search for Recommendation on Heterogeneous Information Network. CIKM 2020 【自动优化meta-path】
+TGCN Tag Graph Convolutional Network for Tag-Aware Recommendation. CIKM 2020
+Knowledge-Enhanced Top-K Recommendation in Poincaré Ball. AAAI 2021
+Graph Heterogeneous Multi-Relational Recommendation. AAAI 2021
+Knowledge-Enhanced Hierarchical Graph Transformer Network for Multi-Behavior Recommendation. AAAI 2021
+Alleviating Cold-Start Problems in Recommendation through Pseudo-Labelling over Knowledge Graph. WSDM 2021
+Decomposed Collaborative Filtering Modeling Explicit and Implicit Factors For Recommender Systems. WSDM 2021
+Temporal Meta-path Guided Explainable Recommendation. WSDM 2021
+Learning Intents behind Interactions with Knowledge Graph for Recommendation. WWW 2021
+1.4 Feature Interactions
+
+这一部分工作主要以特征交互为主。已经有非常多经典的方法在工业界的推荐中得到了广泛的应用，例如FM，DeepFM，Wide&Deep等。
+
+Detecting Beneficial Feature Interactions for Recommender Systems. AAAI 2021 【Graph-based】
+DeepLight: Deep Lightweight Feature Interactions for Accelerating CTR Predictions in Ad Serving. WSDM 2021 【加速特征交互】
+Multi-Interactive Attention Network for Fine-grained Feature Learning in CTR Prediction. WSDM 2021 【细粒度】
+FM^2: Field-matrixed Factorization Machines for CTR Prediction. WWW 2021 【FwFM升级版】
+1.5 Conversational Recommender System
+
+Towards Question-based Recommender Systems. SIGIR 2020
+Improving Conversational Recommender Systems via Knowledge Graph based Semantic Fusion. KDD 2020 【CRS + KG】
+Interactive Path Reasoning on Graph for Conversational Recommendation. KDD 2020
+A Ranking Optimization Approach to Latent Linear Critiquing for Conversational Recommender Systems. RecSys 2020 【对话推荐系统的一种排序优化方法】
+What does BERT know about books, movies and music： Probing BERT for Conversational Recommendation. RecSys 2020 【CRS + KG】
+Adapting User Preference to Online Feedback in Multi-round Conversational Recommendation. WSDM 2021 【多轮】
+A Workflow Analysis of Context-driven Conversational Recommendation. WWW 2021 【分析CRS workflow】
+1.6 Social Recommendations
+
+Partial Relationship Aware Influence Diffusion via a Multi-channel Encoding Scheme for Social Recommendation. CIKM 2020
+Random Walks with Erasure: Diversifying Personalized Recommendations on Social and Information Networks. WWW 2021
+Dual Side Deep Context-aware Modulation for Social Recommendation. WWW 2021
+Self-Supervised Multi-Channel Hypergraph Convolutional Network for Social Recommendation. WWW 2021
+1.7 News Recommendations
+
+KRED:Knowledge-Aware Document Representation for News Recommendations. RecSys 2020
+News Recommendation with Topic-Enriched Knowledge Graphs. CIKM 2020
+The Interaction between Political Typology and Filter Bubbles in News Recommendation Algorithms. WWW 2021
+1.8 Text-aware Recommendations
+
+TAFA: Two-headed Attention Fused Autoencoder for Context-Aware Recommendations. RecSys 2020 【Review】
+Set-Sequence-Graph A Multi-View Approach Towards Exploiting Reviews for Recommendation. CIKM 2020 【Review】
+TPR: Text-aware Preference Ranking for Recommender Systems. CIKM 2020
+Leveraging Review Properties for Effective Recommendation. WWW 2021 【Review】
+1.9 Point-of-Interest
+
+HME: A Hyperbolic Metric Embedding Approach for Next-POI Recommendation. SIGIR 2020
+Spatial Object Recommendation with Hints: When Spatial Granularity Matters. SIGIR 2020
+Geography-Aware Sequential Location Recommendation. KDD 2020
+Learning Graph-Based Geographical Latent Representation for Point-of-Interest Recommendation. CIKM 2020
+STP-UDGAT Spatial-Temporal-Preference User Dimensional Graph Attention Network for Next POI Recommendation. CIKM 2020
+STAN: Spatio-Temporal Attention Network for next Point-of-Interest Recommendation. WWW 2021
+Incremental Spatio-Temporal Graph Learning for Online Query-POI Matching. WWW 2021
+1.10 Online Recommendations
+
+Gemini: A novel and universal heterogeneous graph information fusing framework for online recommendations. KDD 2020
+Maximizing Cumulative User Engagement in Sequential Recommendation An Online Optimization Perspective. KDD 2020
+Exploring Clustering of Bandits for Online Recommendation System. RecSys 2020
+Contextual User Browsing Bandits for Large-Scale Online Mobile Recommendation. RecSys 2020
+A Hybrid Bandit Framework for Diversified Recommendation. AAAI 2021
+1.11 Group Recommendations
+
+GAME: Learning Graphical and Attentive Multi-view Embeddings for Occasional Group Recommendation. SIGIR 2020
+GroupIM: A Mutual Information Maximizing Framework for Neural Group Recommendation. SIGIR 2020
+Group-Aware Long- and Short-Term Graph Representation Learning for Sequential Group Recommendation. SIGIR 2020
+1.12 Multi-task/Multi-behavior/Cross-domain
+
+Transfer Learning via Contextual Invariants for One-to-Many Cross-Domain Recommendation. SIGIR 2020 【Cross-domain】
+CATN: Cross-Domain Recommendation for Cold-Start Users via Aspect Transfer Network. SIGIR 2020 【Cross-domain】
+Multi-behavior Recommendation with Graph Convolution Networks. SIGIR 2020
+Parameter-Efficient Transfer from Sequential Behaviors for User Modeling and Recommendation. SIGIR 2020
+Web-to-Voice Transfer for Product Recommendation on Voice. SIGIR 2020
+Jointly Learning to Recommend and Advertise. KDD 2020
+Progressive Layered Extraction (PLE) A Novel Multi-Task Learning (MTL) Model for Personalized Recommendations. RecSys 2020 【多目标优化 by Tencent】
+Whole-Chain Recommendations. CIKM 2020
+Personalized Approximate Pareto-Efficient Recommendation. WWW 2021 【面向Pareto的强化学习方法解决多目标优化推荐】
+1.13 Other Task
+
+除了上面提到的比较经典的推荐任务，最近一年的顶会文章还有一些其他有意思的任务。
+
+Hierarchical Fashion Graph Network for Personalized Outfit Recommendation. SIGIR 2020 【Outfit Recommendation】
+Octopus: Comprehensive and Elastic User Representation for the Generation of Recommendation Candidates. SIGIR 2020 【Candidate Generation】
+Goal-driven Command Recommendations for Analysts. RecSys 2020 【从非结构化log数据中进行command recommendation】
+MultiRec: A Multi-Relational Approach for Unique Item Recommendation in Auction Systems. RecSys 2020 【拍卖系统中的推荐】
+PURS: Personalized Unexpected Recommender System for Improving User Satisfaction. RecSys 2020 【意外推荐，没想到吧.jpg】
+RecSeats: A Hybrid Convolutional Neural Network Choice Model for Seat Recommendations at Reserved Seating Venues. RecSys 2020 【座位推荐，莱纳你坐啊】
+Live Multi-Streaming and Donation Recommendations via Coupled Donation-Response Tensor Factorization. CIKM 2020 【Multi-streaming】
+Learning to Recommend from Sparse Data via Generative User Feedback. AAAI 2021
+Real-time Relevant Recommendation Suggestion. WSDM 2021 【Recommendation Suggestion】
+Heterogeneous Graph Augmented Multi-Scenario Sharing Recommendation with Tree-Guided Expert Networks. WSDM 2021 【Share Recommendation】
+FINN: Feedback Interactive Neural Network for Intent Recommendation. WWW 2021 【Intent Recommendation】
+Drug Package Recommendation via Interaction-aware Graph Induction. WWW 2021 【Drug Package Recommendation】
+Large-scale Comb-K Recommendation. WWW 2021 【Comb-K 推荐】
+Variation Control and Evaluation for Generative Slate Recommendations. WWW 2021 【Generative Slate Recommendation】
+Diversified Recommendation Through Similarity-Guided Graph Neural Networks. WWW 2021 【多样性推荐】
+2. 推荐的热门研究话题
+2.1 Debias in Recommender System
+
+bias是广泛存在于推荐系统中的，包括比较常见的流行度偏差 (popularity bias)，选择偏差 (selection bias)，曝光偏差 (exposure bias)，位置偏差 (position bias) 以及其他各种偏差。推荐系统的debias的工作一直都有人在做，随着近两年causal inference成为热点，这个topic最近变得非常热门。
+
+A General Knowledge Distillation Framework for Counterfactual Recommendation via Uniform Data. SIGIR 2020
+Measuring and Mitigating Item Under-Recommendation Bias in Personalized Ranking Systems. SIGIR 2020
+Attribute-based Propensity for Unbiased Learning in Recommender Systems Algorithm and Case Studies. KDD 2020 【position bias】
+Counterfactual Evaluation of Slate Recommendations with Sequential Reward Interactions. KDD 2020
+Debiasing Item-to-Item Recommendations With Small Annotated Datasets. RecSys 2020
+Keeping Dataset Biases out of the Simulation : A Debiased Simulator for Reinforcement Learning based Recommender Systems. RecSys 2020
+Unbiased Ad Click Prediction for Position-aware Advertising Systems. RecSys 2020 【debias in position-aware recommedantion】
+Unbiased Learning for the Causal Effect of Recommendation. RecSys 2020
+E-commerce Recommendation with Weighted Expected Utility. CIKM 2020
+Popularity-Opportunity Bias in Collaborative Filtering. WSDM 2021 【提出了一种新的popularity bias考虑了opportunity】
+Combating Selection Biases in Recommender Systems with a Few Unbiased Ratings. WSDM 2021 【利用少部分无偏数据解决selection bias】
+Leave No User Behind Towards Improving the Utility of Recommender Systems for Non-mainstream Users. WSDM 2021 【mainstream bias】
+Non-Clicks Mean Irrelevant Propensity Ratio Scoring As a Correction. WSDM 2021
+Diverse User Preference Elicitation with Multi-Armed Bandits. WSDM 2021 【多臂老虎机增加推荐系统多样性缓解popularity bias】
+Unbiased Learning to Rank in Feeds Recommendation. WSDM 2021 【context-aware position bias】
+Cross-Positional Attention for Debiasing Clicks. WWW 2021
+Debiasing Career Recommendations with Neural Fair Collaborative Filtering. WWW 2021 【gender bias】
+2.2 Fairness in Recommender System
+
+Fairness-Aware Explainable Recommendation over Knowledge Graphs. SIGIR 2020 【运用KG做re-ranking】
+Ensuring Fairness in Group Recommendations by Rank-Sensitive Balancing of Relevance. RecSys 2020
+Fairness-Aware News Recommendation with Decomposed Adversarial Learning. AAAI 2021 【Fairness in News Recommendation】
+Practical Compositional Fairness Understanding Fairness in Multi-Component Recommender Systems. WSDM 2021
+Towards Long-term Fairness in Recommendation. WSDM 2021
+Learning Fair Representations for Recommendation: A Graph-based Perspective. WWW 2021
+User-oriented Group Fairness In Recommender Systems. WWW 2021
+2.3 Attack in Recommender System
+
+万物皆可攻击
+
+Revisiting Adversarially Learned Injection Attacks Against Recommender Systems. RecSys 2020 【对推荐系统对抗性注入攻击的重新审视】
+Attacking Recommender Systems with Augmented User Profiles. CIKM 2020 【从用户特征进行攻击】
+A Black-Box Attack Model for Visually-Aware Recommenders. WSDM 2021 【针对图像特征的推荐系统攻击】
+Denoising Implicit Feedback for Recommendation. WSDM 2021 【训练数据去噪】
+Adversarial Item Promotion: Vulnerabilities at the Core of Top-N Recommenders that Use Images to Address Cold Start. WWW 2021 【针对图像攻击】
+Graph Embedding for Recommendation against Attribute Inference Attacks. WWW 2021
+2.4 Explanation in Recommender System
+
+Try This Instead: Personalized and Interpretable Substitute Recommendation. KDD 2020
+CAFE: Coarse-to-Fine Neural Symbolic Reasoning for Explainable Recommendation. CIKM 2020 【通过KG提升可解释性】
+Explainable Recommender Systems via Resolving Learning Representations. CIKM 2020 【借助KG表示学习提升可解释性】
+Generate Neural Template Explanations for Recommendation. CIKM 2020 【生成文本提升可解释性】
+Explainable Recommendation with Comparative Constraints on Product Aspects. WSDM 2021 【通过和物品在属性上比较来提升可解释性】
+Explanation as a Defense of Recommendation. WSDM 2021 【生成文本提升可解释性】
+EX^3: Explainable Product Set Recommendation for Comparison Shopping. WWW 2021
+Learning from User Feedback on Explanations to Improve Recommender Models. WWW 2021
+2.5 Long-tail/Cold-start in Recommender System
+
+从有推荐系统开始就存在的痛点问题，目前比较流行基于meta-learning, transfer-learning的方法。
+
+Content-aware Neural Hashing for Cold-start Recommendation. SIGIR 2020
+MAMO: Memory-Augmented Meta-Optimization for Cold-start Recommendation. KDD 2020
+Learning Transferrable Parameters for Long-tailed Sequential User Behavior Modeling. KDD 2020 【通用的方法解决序列推荐中的长尾问题】
+Meta-learning on Heterogeneous Information Networks for Cold-start Recommendation. KDD 2020
+Cold-Start Sequential Recommendation via Meta Learner. AAAI 2021
+Personalized Adaptive Meta Learning for Cold-start User Preference Prediction. AAAI 2021
+Task-adaptive Neural Process for User Cold-Start Recommendation. WWW 2021
+A Model of Two Tales: Dual Transfer Learning Framework for Improved Long-tail Item Recommendation. WWW 2021
+2.6 Evaluation
+
+对于新型推荐任务评测方式的创造以及到底该不该采样评测？
+
+Measuring Recommendation Explanation Quality: The Conflicting Goals of Explanations. SIGIR 2020 【评价生成的推荐系统解释的质量】
+Evaluating Conversational Recommender Systems via User Simulation. KDD 2020 【CRS评测指标】
+On Sampled Metrics for Item Recommendation. KDD 2020
+On Sampling Top-K Recommendation Evaluation. KDD 2020
+Are We Evaluating Rigorously： Benchmarking Recommendation for Reproducible Evaluation and Fair Comparison. RecSys 2020
+On Target Item Sampling in Offline Recommender System Evaluation. RecSys 2020
+3. 先进技术在推荐中的应用
+3.1 Pre-training in Recommender System
+
+S^3-Rec: Self-Supervised Learning for Sequential Recommendation with Mutual Information Maximization. CIKM 2020
+U-BERT Pre-Training User Representations for Improved Recommendation. AAAI 2021
+Pre-Training Graph Neural Networks for Cold-Start Users and Items Representation. WSDM 2021
+3.2 Reinforcement Learning in Recommender System
+
+MaHRL: Multi-goals Abstraction based Deep Hierarchical Reinforcement Learning for Recommendations. SIGIR 2020
+Interactive Recommender System via Knowledge Graph-enhanced Reinforcement Learning. SIGIR 2020
+Joint Policy-Value Learning for Recommendation. KDD 2020
+BLOB: A Probabilistic Model for Recommendation that Combines Organic and Bandit Signals. KDD 2020
+Learning to Collaborate in Multi-Module Recommendation via Multi-Agent Reinforcement Learning without Communication. RecSys 2020
+Reinforcement Learning with a Disentangled Universal Value Function for Item Recommendation. AAAI 2021
+User Response Models to Improve a REINFORCE Recommender System. WSDM 2021
+Cost-Effective and Interpretable Job Skill Recommendation with Deep Reinforcement Learning. WWW 2021
+A Multi-Agent Reinforcement Learning Framework for Intelligent Electric Vehicle Charging Recommendation. WWW 2021
+Reinforcement Recommendation with User Multi-aspect Preference. WWW 2021
+3.3 Knowledge Distillation in Recommender System
+
+Privileged Features Distillation at Taobao Recommendations. KDD 2020
+DE-RRD: A Knowledge Distillation Framework for Recommender System. CIKM 2020 【BPRMF也需要蒸馏我是没想到的】
+Bidirectional Distillation for Top-K Recommender System. WWW 2021 【双向蒸馏】
+3.4 NAS in Recommender System
+
+Neural Input Search for Large Scale Recommendation Models. KDD 2020
+Field-aware Embedding Space Searching in Recommender Systems. WWW 2021 【AutoML自动选择特征维度】
+3.5 Federated Learning in Recommender System
+
+FedFast Going Beyond Average for Faster Training of Federated Recommender Systems. KDD 2020
+4. 理论/实验分析
+推荐系统理论分析的论文不是很常见，下面这几篇都还挺有趣的。
+
+How Dataset Characteristics Affect the Robustness of Collaborative Recommendation Models. SIGIR 2020
+Agreement and Disagreement between True and False-Positive Metrics in Recommender Systems Evaluation. SIGIR 2020
+Critically Examining the Claimed Value of Convolutions over User-Item Embedding Maps for Recommender Systems. CIKM 2020 【理论结合实验分析CNN建模推荐系统embedding不太work】
+On Estimating Recommendation Evaluation Metrics under Sampling. AAAI 2021
+Beyond Point Estimate Inferring Ensemble Prediction Variation from Neuron Activation Strength in Recommender Systems. WSDM 2021 【分析推荐系统ensemble】
+Bias-Variance Decomposition for Ranking. WSDM 2021
+Theoretical Understandings of Product Embedding for E-commerce Machine Learning. WSDM 2021
+5. 其他
+Learning Personalized Risk Preferences for Recommendation. SIGIR 2020
+Distributed Equivalent Substitution Training for Large-Scale Recommender Systems. SIGIR 2020 【大规模推荐系统的分布式训练】
+Beyond User Embedding Matrix: Learning to Hash for Modeling Large-Scale Users in Recommendation. SIGIR 2020 【大规模user hash】
+How to Retrain a Recommender System? SIGIR 2020 【来了新数据怎么retrain】
+Recommendation for New Users and New Items via Randomized Training and Mixture-of-Experts Transformation. SIGIR 2020
+Compositional Embeddings Using Complementary Partitions for Memory-Efficient Recommendation Systems. KDD 2020 【解决embedding内存问题】
+Improving Recommendation Quality in Google Drive. KDD 2020 【Google Drive 推荐实战】
+A Method to Anonymize Business Metrics to Publishing Implicit Feedback Datasets. RecSys 2020 【如何构建和发布数据集】
+Exploiting Performance Estimates for Augmenting Recommendation Ensembles. RecSys 2020 【有效的推荐模型ensemble方法】
+User Simulation via Supervised Generative Adversarial Network. WWW 2021
+发布于 04-01
